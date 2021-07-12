@@ -112,23 +112,26 @@ end
 
 if __FILE__ == $0
   # get input
-  puts "Instructions: enter a mathematical expression using +, -, *, /, or ** (^)"
-  puts "e.g. 5 + 4"  #TODO extend example after more that one operation is supported
+  puts "Instructions: enter a mathematical expression using +, -, *, /, **, or (q)uit"
+  puts "e.g. 4 + 5"  #TODO extend example after more that one operation is supported
   puts "At this stage of development, only one operation is supported at a time"  #TODO remove when changed
   print "Enter an expression: "
-  expr = gets  # no chomp or strip because it is handled in calc()
+  expr = gets.strip
 
-  # send to calc() and print result
-  result = calc(expr)
+  until expr.downcase.start_with?("q")
+    # send to calc() and print result
+    result = calc(expr)
 
-  if result == nil
-    puts "Please enter a valid expression"
-    puts "Hint: all elements should be separated by spaces"
-  elsif result.to_s[-1] == "0"  # print int if result is integer
-    puts result.to_i
-  else
-    puts result
+    if result == nil
+      puts "Please enter a valid expression"
+      puts "Hint: all elements should be separated by spaces"
+    elsif result.to_s[-1] == "0"  # print int if result is integer
+      puts result.to_i
+    else
+      puts result
+    end
+
+    print "enter another expression, or (q)uit: "
+    expr = gets.strip
   end
-
-  # continue until user enters "q" or "quit"
 end
