@@ -2,7 +2,7 @@
 #tui_calc.rb
 # Author: Kyle Nielsen
 # Date created: 7/10/21
-# Last update: 7/10/21
+# Last update: 7/12/21
 # Purpose: A practice project with the intent to create a GUI version later
 # Credit:
 # Future improvements:
@@ -12,7 +12,7 @@
 # carrot is a common symbol for power outside of coding, so it is included
 # note: any operation added here should have a function
 #       and an entry in ops_hash in calc()
-OPS = [['^', '**'], ['*', '/'], ['+', '-']]  #TODO may need to use double quotes
+OPS = [['^', '**'], ['*', '/'], ['+', '-']]
 
 # returns x + y
 def add(x, y)
@@ -30,11 +30,12 @@ def mult(x,  y)
   x * y
 end
 
-# return x / y
+# returns x / y
 def div(x, y)
-  x / y  #TODO make sure int / int doesn't round
+  x / y
 end
 
+# returns x ** y
 def pow(x, y)
   x ** y
 end
@@ -70,7 +71,8 @@ end
 # Takes a valid math expresion (string) and returns the result as a float
 # or nil if expression is invalid
 # The elements of the expresion should be seperated by spaces
-def calc(expr)
+# If verbose, prints the new expression after each intermediary calculation
+def calc(expr, verbose=false)
   # hash of str: func for operations
   ops_hash = {'+': method(:add), '-': method(:subt), '*': method(:mult), '/': method(:div), '**': method(:pow), '^': method(:pow)}
 
@@ -82,19 +84,27 @@ def calc(expr)
     return nil
   end
 
-  # get op and values from expression
-  op = expr_arr[1]
-  x = expr_arr[0]
-  y = expr_arr[2]
+  #TODO delete when not needed
+  # # get op and values from expression
+  # op = expr_arr[1]
+  # x = expr_arr[0]
+  # y = expr_arr[2]
 
-  result = ops_hash[op.to_sym].(x.to_f, y.to_f)  # call appropriate operation function
+  # # call appropriate operation function
+  # result = ops_hash[op.to_sym].(x.to_f, y.to_f)
 
-  # for more operstions:
-  # once proper format is verified, can assume expr_arr[1] is op, [0] and [2] are x and y
-  # temp_result = ops[op.to_sym].(x.to_num, y.to_num)
-  # remove expr_arr[0] and [1]
-  # expr_arr[0] = temp_result  # used to be [2] before removals
-  # repeat until expr_arr has only one element (the final result)
+  # # delete first two elements, set third to result
+  # # this will allow execution of further operations (4 + 5 + 6 becomes 9 + 6)
+  # expr_arr.shift(2)
+  # expr_arr[0] = result
+
+  # # recurse until all operations are complete
+  # if expr_arr.length == 1
+  #   return result
+  # else
+  #   return calc(expr_arr.join(" "))
+  # end
+  #TODO end delete
 
   # for order of operations:
   # search for * or /, then + or -
@@ -105,33 +115,68 @@ def calc(expr)
   # create sub-array from [i+1..j]. treat like expr_arr to solve
   # remove [i..j]
   # [i] = result
+  result = 0  # initialize result variable so the return statement can find it
+  OPS.each do |op_set|
+    i = 0
+    while i < (expr_arr.length - 1) do
+      if op_set.include?(expr_arr[i])
+        # find and assign operation and values
+        op = expr_arr[i]
+        x = expr_arr[i-1]
+        y = expr_arr[i+1]
 
+        # call appropriate op function
+        result = ops_hash[op.to_sym].(x.to_f, y.to_f)
+
+        # replace the 3 used elements with the result
+        expr_arr.delete_at(i-1)
+        expr_arr.delete_at(i-1)
+        expr_arr[i-1] = result
+        i = 0
+        if verbose and not expr_arr.length == 1
+          puts expr_arr.join(" ")
+        end
+      else
+        i += 1
+      end
+    end
+  end
 
   return result
 end
 
+
+# TUI for when calculator is run from command line
+# accepts an optional bool argument (default false) for verbose output
 if __FILE__ == $0
+  # determine whether to use verbose outpuut
+  verbose = false
+  if ARGV[0] != nil and ARGV[0].downcase == "true"
+    verbose = true
+  end
+
   # get input
   puts "Instructions: enter a mathematical expression using +, -, *, /, **, or (q)uit"
-  puts "e.g. 4 + 5"  #TODO extend example after more that one operation is supported
-  puts "At this stage of development, only one operation is supported at a time"  #TODO remove when changed
+  puts "Calculator follows order of operations, but doesn't support parantheses"
+  puts "e.g. 4 + 5 * 6"  #TODO extend example after more tparantheses are supported
   print "Enter an expression: "
-  expr = gets.strip
+  expr = STDIN.gets.strip
 
+  # continue calculating expressions until user quits
   until expr.downcase.start_with?("q")
     # send to calc() and print result
-    result = calc(expr)
+    result = calc(expr, verbose)
 
     if result == nil
       puts "Please enter a valid expression"
       puts "Hint: all elements should be separated by spaces"
-    elsif result.to_s[-1] == "0"  # print int if result is integer
+    elsif result % 1 == 0  # print int if result is integer
       puts result.to_i
     else
       puts result
     end
 
     print "enter another expression, or (q)uit: "
-    expr = gets.strip
+    expr = STDIN.gets.strip
   end
 end
