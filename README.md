@@ -14,7 +14,7 @@ Ruby. This was made with ruby 3.0.1, but should work with earlier versions of ru
 
 Either execute using ruby: `ruby tui_calc.rb` or make the file executable and execute directly: `./tui_calc.rb`
 
-The program accepts one command line argument ("true" or "false", default false). If true, the program will print verbose output. This means printing intermediary expressions during calculation.  
+The program accepts one command line argument -v. If given, the program will print verbose output. This means printing intermediary expressions during calculation.  
 e.g. `4 + 5 * 6` will print `4 + 30` before printing the final result.
 
 The program will prompt for a methematical expresion. Valid operations are displayed. Separate different elements using spaces. e.g. `4 + 5` is right, but `4+5` is wrong.

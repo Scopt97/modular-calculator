@@ -2,10 +2,10 @@
 #tui_calc.rb
 # Author: Kyle Nielsen
 # Date created: 7/10/21
-# Last update: 7/12/21
+# Last update: 7/15/21
 # Purpose: A practice project with the intent to create a GUI version later
 # Credit:
-# Future improvements:
+# Future improvements: Don't require spaces between elements. e.g. 44+55*66 should work
 
 # Valid operations, grouped based on order of operations
 # This array is also used to determine order of operations
@@ -74,50 +74,28 @@ end
 # If verbose, prints the new expression after each intermediary calculation
 def calc(expr, verbose=false)
   # hash of str: func for operations
-  ops_hash = {'+': method(:add), '-': method(:subt), '*': method(:mult), '/': method(:div), '**': method(:pow), '^': method(:pow)}
+  ops_hash = {'+': method(:add), '-': method(:subt),
+             '*': method(:mult), '/': method(:div),
+             '**': method(:pow), '^': method(:pow)}
 
   # parse expr
   expr.strip!
   expr_arr = expr.split
 
+  # check expression validity
   unless check_expr(expr_arr)
     return nil
   end
 
-  #TODO delete when not needed
-  # # get op and values from expression
-  # op = expr_arr[1]
-  # x = expr_arr[0]
-  # y = expr_arr[2]
-
-  # # call appropriate operation function
-  # result = ops_hash[op.to_sym].(x.to_f, y.to_f)
-
-  # # delete first two elements, set third to result
-  # # this will allow execution of further operations (4 + 5 + 6 becomes 9 + 6)
-  # expr_arr.shift(2)
-  # expr_arr[0] = result
-
-  # # recurse until all operations are complete
-  # if expr_arr.length == 1
-  #   return result
-  # else
-  #   return calc(expr_arr.join(" "))
-  # end
-  #TODO end delete
-
-  # for order of operations:
-  # search for * or /, then + or -
-  # op = [i], x = [i-1], y = [i+1]
-  # call op
-  # [i] = result, remove [i-1] and [i+1]
-  # for parens: find open at [i], close at [j]
-  # create sub-array from [i+1..j]. treat like expr_arr to solve
-  # remove [i..j]
-  # [i] = result
   result = 0  # initialize result variable so the return statement can find it
+
+  # search for operations in order
   OPS.each do |op_set|
     i = 0
+
+    # search expression for current operations
+    # if found: calculate, replace, and search from begining of expression
+    # else: move to next element in expression
     while i < (expr_arr.length - 1) do
       if op_set.include?(expr_arr[i])
         # find and assign operation and values
@@ -132,7 +110,9 @@ def calc(expr, verbose=false)
         expr_arr.delete_at(i-1)
         expr_arr.delete_at(i-1)
         expr_arr[i-1] = result
-        i = 0
+        i = 0  # indices got moved and removed, so start from beginning
+
+        # print verbose output
         if verbose and not expr_arr.length == 1
           puts expr_arr.join(" ")
         end
@@ -141,17 +121,16 @@ def calc(expr, verbose=false)
       end
     end
   end
-
   return result
 end
 
 
 # TUI for when calculator is run from command line
-# accepts an optional bool argument (default false) for verbose output
+# accepts an optional command line argument -v for verbose output
 if __FILE__ == $0
   # determine whether to use verbose outpuut
   verbose = false
-  if ARGV[0] != nil and ARGV[0].downcase == "true"
+  if ARGV[0] != nil and ARGV[0].downcase == "-v"
     verbose = true
   end
 
