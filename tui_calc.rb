@@ -4,8 +4,10 @@
 # Date created: 7/10/21
 # Last update: 7/15/21
 # Purpose: A practice project with the intent to create a GUI version later
-# Credit:
+# Credit: Nested bracket checking taken from UOregon Intermediate Data Structures
+#         assignment tought by Professor Andrzej Proskurowski
 # Future improvements: Don't require spaces between elements. e.g. 44+55*66 should work
+
 
 # Valid operations, grouped based on order of operations
 # This array is also used to determine order of operations
@@ -40,14 +42,87 @@ def pow(x, y)
   x ** y
 end
 
+# check for properly nested parens
+# returns an array of the form [[bracket, index in nest, index in expr_arr, match index], ...]
+# if valid or nil if invalid nesting
+# This version of nest checking is a bit more complex because I need to track
+# match indexes for my calculator implementation
+def check_parens(expr_arr)
+  # set up
+  pairs = {'(' => ')', '[' => ']', '{' => '}', '<' => '>'}
+  nest = []  # Will hold the brackets from expr_arr. Form [[bracket, i, j, match j]]
+              # where i is index in nest, j is index in expr_arr
+  stack = []  # array used like stack
+  nest_index = 0 # used to track our position in nest. I would use nest.shift,
+                  # but I need to preserve nest because it has the info I want to return
+  count = 0  # used to set i from above
+
+  # put brackets from expression into nest
+  expr_arr.each_index do |j|
+    if pairs.key?(expr_arr[j]) or pairs.value?(expr_arr[j])
+      nest.push([expr_arr[j], count, j, nil])
+      count += 1
+    end
+  end
+
+  # if there are no brackets return
+  if nest.length == 0
+    return nest
+  end
+
+  # initialize stack
+  stack.push(nest[nest_index])
+  nest_index += 1
+
+  # This loop checks if current bracket in nest matches top of stack. deletes them
+  # if yes, adds bracket from nest to stack if no
+  until nest_index == nest.length do
+    # If stack is empty, init again
+    if stack.empty?
+      stack.push(nest[nest_index])
+      nest_index += 1
+    end
+
+    # if match found, save index and pop stack
+    # remember: [0] is bracket, [1] is index in nest, [2] is index in expr_arr
+    #           and [3] is index of match in expr_arr
+    if pairs[stack.last[0]] == nest[nest_index][0]
+      nest[stack.last[1]][3] = nest[nest_index][2]
+      nest[nest_index][3] = stack.last[2]
+      nest_index += 1
+      stack.pop
+    else
+      stack.push(nest[nest_index])
+      nest_index += 1
+    end
+  end
+
+  # if stack empty after getting to end of nest, nest is valid
+  if stack.empty?
+    return nest
+  else
+    return nil
+  end
+end
+
 # takes an array and checks whether it is a valid mathematical expression
 # i.e. start and end with num, alternate num and op
-#TODO doesn't work with parentheses
-def check_expr(expr_arr)
+# need_check_parens determines whether to call check_parens or not
+#   calc will send false because it calls check_parens itself since it needs
+#   the match index info
+def check_expr(expr_arr, need_check_parens=true)
   if expr_arr.length < 3  # valid expression is at least 2 numbers and an operation
     return false
+  end
 
-  elsif expr_arr[0].respond_to?(:to_f) and expr_arr[-1].respond_to?(:to_f)  # check first and last
+  if need_check_parens
+    unless check_parens(expr_arr)
+      return false
+    end
+  end
+
+  # first and last must be numbers (if not parentheses)
+  if expr_arr[0].respond_to?(:to_f) and expr_arr[-1].respond_to?(:to_f)
     valid = true
     expr_arr.each_index do |i|
       if i % 2 == 0  # if i even
@@ -82,8 +157,17 @@ def calc(expr, verbose=false)
   expr.strip!
   expr_arr = expr.split
 
+  # check paren validity. nest contains info on matching indices
+  nest = check_parens(expr_arr)
+  unless nest
+    return nil
+  end
+  #TODO change calculation to work with parens
+  # if find paren, locate match. send what's inside match to calc. use result
+  # to replace parens and contents
+
   # check expression validity
-  unless check_expr(expr_arr)
+  unless check_expr(expr_arr, false)
     return nil
   end
 
@@ -141,6 +225,10 @@ if __FILE__ == $0
   print "Enter an expression: "
   expr = STDIN.gets.strip
 
+  #TODO this is for testing check_parens
+  #nest = check_parens(expr.split)
+  #p nest
+
   # continue calculating expressions until user quits
   until expr.downcase.start_with?("q")
     # send to calc() and print result
@@ -155,7 +243,7 @@ if __FILE__ == $0
       puts result
     end
 
-    print "enter another expression, or (q)uit: "
-    expr = STDIN.gets.strip
+   print "enter another expression, or (q)uit: "
+   expr = STDIN.gets.strip
   end
 end
