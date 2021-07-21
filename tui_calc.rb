@@ -6,7 +6,12 @@
 # Purpose: A practice project with the intent to create a GUI version later
 # Credit: Nested bracket checking taken from UOregon Intermediate Data Structures
 #         assignment tought by Professor Andrzej Proskurowski
-# Future improvements: Don't require spaces between elements. e.g. 44+55*66 should work
+# Future improvements: Don't require spaces between elements. e.g. (44+55)*66 should work
+#                      Allow implicit multiplication with parens
+#                      Adjust some things for efficiency. Theres a lot of looping
+#                        through things, and some can probably be cut down.
+#                        This is not a priority as anyone needing a hyper-efficient
+#                        calculator will go for one written in C by an efficiency pro
 
 
 # Valid operations, grouped based on order of operations
@@ -110,7 +115,9 @@ end
 # need_check_parens determines whether to call check_parens or not
 #   calc will send false because it calls check_parens itself since it needs
 #   the match index info
-def check_expr(expr_arr, need_check_parens=true)
+def check_expr(expr_arr, need_check_parens=true)  
+  expr_arr = expr_arr.clone  # need to change expr_arr later w/o changing source
+
   if expr_arr.length < 3  # valid expression is at least 2 numbers and an operation
     return false
   end
@@ -119,6 +126,14 @@ def check_expr(expr_arr, need_check_parens=true)
     unless check_parens(expr_arr)
       return false
     end
+  end
+
+  # brackets are valid, so remove them to test the expression
+  # this method means implied multiplication like 5(4+3) doesn't work
+  # this is okay because calc() can't handle implicit mult anyway
+  brackets = ['(', ')', '{', '}', '[', ']', '<', '>']
+  brackets.each do |brack|
+    expr_arr.delete(brack)
   end
 
   # first and last must be numbers (if not parentheses)
