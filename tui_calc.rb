@@ -2,12 +2,14 @@
 #tui_calc.rb
 # Author: Kyle Nielsen
 # Date created: 7/10/21
-# Last update: 7/15/21
-# Purpose: A practice project with the intent to create a GUI version later
+# Last update: 9/7/21
+# Purpose: A TUI calculator that can be used as a backend for a GUI calculator
 # Credit: Nested bracket checking taken from UOregon Intermediate Data Structures
 #         assignment tought by Professor Andrzej Proskurowski
 # Future improvements: Don't require spaces between elements. e.g. (44+55)*66 should work
 #                      Allow implicit multiplication with parens
+#                      Get verbose output to work with parens
+#                      Add more operations, such as %
 #                      Adjust some things for efficiency. Theres a lot of looping
 #                        through things, and some can probably be cut down.
 #                        This is not a priority as anyone needing a hyper-efficient
@@ -21,6 +23,13 @@
 #       and an entry in ops_hash in calc()
 OPS = [['^', '**'], ['*', '/'], ['+', '-']]
 
+# Hash matching open brackets to the appropriate closing bracket
+PAIRS = {'(' => ')', '[' => ']', '{' => '}', '<' => '>'}
+
+
+# Functions for the different operations
+# These are converted to symbols, then used as the values in ops_hash in clac()
+
 # returns x + y
 def add(x, y)
   x + y
@@ -33,7 +42,7 @@ def subt(x, y)
 end
 
 # returns x * y
-def mult(x,  y)
+def mult(x, y)
   x * y
 end
 
@@ -54,7 +63,6 @@ end
 # match indexes for my calculator implementation
 def check_parens(expr_arr)
   # set up
-  pairs = {'(' => ')', '[' => ']', '{' => '}', '<' => '>'}
   nest = []  # Will hold the brackets from expr_arr. Form [[bracket, i, j, match j]]
               # where i is index in nest, j is index in expr_arr
   stack = []  # array used like stack
@@ -64,13 +72,13 @@ def check_parens(expr_arr)
 
   # put brackets from expression into nest
   expr_arr.each_index do |j|
-    if pairs.key?(expr_arr[j]) or pairs.value?(expr_arr[j])
+    if PAIRS.key?(expr_arr[j]) or PAIRS.value?(expr_arr[j])
       nest.push([expr_arr[j], count, j, nil])
       count += 1
     end
   end
 
-  # if there are no brackets return
+  # if there are no brackets, return
   if nest.length == 0
     return nest
   end
@@ -91,7 +99,7 @@ def check_parens(expr_arr)
     # if match found, save index and pop stack
     # remember: [0] is bracket, [1] is index in nest, [2] is index in expr_arr
     #           and [3] is index of match in expr_arr
-    if pairs[stack.last[0]] == nest[nest_index][0]
+    if PAIRS[stack.last[0]] == nest[nest_index][0]
       nest[stack.last[1]][3] = nest[nest_index][2]
       nest[nest_index][3] = stack.last[2]
       nest_index += 1
@@ -115,7 +123,7 @@ end
 # need_check_parens determines whether to call check_parens or not
 #   calc will send false because it calls check_parens itself since it needs
 #   the match index info
-def check_expr(expr_arr, need_check_parens=true)  
+def check_expr(expr_arr, need_check_parens=true) #TODO disallow "4 ( + 5 )". Not an issue for calc() because calc() recurses, but important for users calling this sepatately
   expr_arr = expr_arr.clone  # need to change expr_arr later w/o changing source
 
   if expr_arr.length < 3  # valid expression is at least 2 numbers and an operation
@@ -131,8 +139,8 @@ def check_expr(expr_arr, need_check_parens=true)
   # brackets are valid, so remove them to test the expression
   # this method means implied multiplication like 5(4+3) doesn't work
   # this is okay because calc() can't handle implicit mult anyway
-  brackets = ['(', ')', '{', '}', '[', ']', '<', '>']
-  brackets.each do |brack|
+  brackets = ['(', ')', '{', '}', '[', ']', '<', '>']  #TODO get brackets from pairs hash so users may add custom brackets
+  brackets.each do |brack| #TODO prob fix bug here. check for ops right of open or left of close. prob need to completely change this loop
     expr_arr.delete(brack)
   end
 
@@ -145,7 +153,7 @@ def check_expr(expr_arr, need_check_parens=true)
           valid = false
         end
       else  # if i odd
-        unless OPS.flatten.include?(expr_arr[i])  # odd elements must be expressions
+        unless OPS.flatten.include?(expr_arr[i])  # odd elements must be operations
           valid = false
         end
       end
@@ -165,25 +173,54 @@ end
 def calc(expr, verbose=false)
   # hash of str: func for operations
   ops_hash = {'+': method(:add), '-': method(:subt),
-             '*': method(:mult), '/': method(:div),
-             '**': method(:pow), '^': method(:pow)}
+              '*': method(:mult), '/': method(:div),
+              '**': method(:pow), '^': method(:pow)}
 
   # parse expr
   expr.strip!
   expr_arr = expr.split
 
-  # check paren validity. nest contains info on matching indices
-  nest = check_parens(expr_arr)
-  unless nest
-    return nil
-  end
-  #TODO change calculation to work with parens
-  # if find paren, locate match. send what's inside match to calc. use result
-  # to replace parens and contents
-
   # check expression validity
   unless check_expr(expr_arr, false)
     return nil
+  end
+
+  j = 0  # used to track index while handling parens
+
+  # find matching parens, then replace parens and contents with result of contents
+  while j < (expr_arr.length - 1) do
+    # check parens and get nest info. needs to be done inside this loop
+    # if not, info fails to match as expression changes
+    nest = check_parens(expr_arr)
+    unless nest
+      return nil
+    end
+
+    match_j = nil  # Initialize match_j so later code can find it
+    # find open paren
+    if PAIRS.key?(expr_arr[j])
+      # find matching close paren
+      nest.each do |info_arr|
+        if info_arr[2] == j
+        match_j = info_arr[3]
+        end
+      end
+
+      # join contents and send to calc
+      temp_expr = expr_arr[j+1...match_j].join(' ')
+      temp_result = calc(temp_expr)
+
+      # return if internal expression was invalid
+      unless temp_result
+        return nil
+      end
+
+      # replace parens and contents with temp result
+      expr_arr[j..match_j] = temp_result
+      j = 0  # indices got moved and removed, so start from beginning
+    else
+      j += 1
+    end
   end
 
   result = 0  # initialize result variable so the return statement can find it
@@ -206,9 +243,7 @@ def calc(expr, verbose=false)
         result = ops_hash[op.to_sym].(x.to_f, y.to_f)
 
         # replace the 3 used elements with the result
-        expr_arr.delete_at(i-1)
-        expr_arr.delete_at(i-1)
-        expr_arr[i-1] = result
+        expr_arr[i-1..i+1] = result
         i = 0  # indices got moved and removed, so start from beginning
 
         # print verbose output
@@ -235,14 +270,11 @@ if __FILE__ == $0
 
   # get input
   puts "Instructions: enter a mathematical expression using +, -, *, /, **, or (q)uit"
-  puts "Calculator follows order of operations, but doesn't support parantheses"
-  puts "e.g. 4 + 5 * 6"  #TODO extend example after more tparantheses are supported
+  puts "Calculator follows order of operations"
+  puts "All elements must be separated by spaces"
+  puts "e.g. ( 4 + 5 ) * 6"
   print "Enter an expression: "
   expr = STDIN.gets.strip
-
-  #TODO this is for testing check_parens
-  #nest = check_parens(expr.split)
-  #p nest
 
   # continue calculating expressions until user quits
   until expr.downcase.start_with?("q")

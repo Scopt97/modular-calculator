@@ -6,7 +6,7 @@ A calculator app with seperate GUI and back end. Backend has a TUI if executed d
 
 ## Requirements
 
-Ruby. This was made with ruby 3.0.1, but should work with earlier versions of ruby.
+Ruby. This was made with Ruby 3.0.1, but should work with earlier versions of Ruby.
 
 ## Usage
 
@@ -14,8 +14,8 @@ Ruby. This was made with ruby 3.0.1, but should work with earlier versions of ru
 
 Either execute using ruby: `ruby tui_calc.rb` or make the file executable and execute directly: `./tui_calc.rb`
 
-The program accepts one optional command line argument -v. If given, the program will print verbose output. This means printing intermediary expressions during calculation.  
-e.g. `4 + 5 * 6` will print `4 + 30` before printing the final result.
+The program accepts one optional command line argument -v. If given, the program will print verbose output. This means printing intermediary expressions during calculation. Only works without parentheses.  
+e.g. `4 + 5 * 6` will print `4 + 30.0` before printing the final result.
 
 The program will prompt for a methematical expresion. Valid operations are displayed. Separate different elements using spaces. e.g. `4 + 5` is right, but `4+5` is wrong.
 
@@ -35,6 +35,13 @@ Not yet implemented
 /: division  
 ** or ^: exponent
 
+#### adding new operations
+
+Users may modify tui_calc.rb to add more operations. Doing so requires three steps.  
+First, add an entry in OPS global array. This is an array of arrays. Order of operations is determined by the order of the top-level array. Operations in each sub-array are excetuted on a first-seen first-executed basis, so order doesn't matter, and the sub-arrays can be thought of like sets. Either add your new operation to a sub-array, or create a new sub-array, depending on when your new operation should be executed.  
+Second, create a function for your operation. In theory, this function could be anything as long as it takes two floats as input and returns one as output.  
+Finally, add an entry to ops_hash in calc(). This hash maps the string for an operation to its function. The existing entries can be used as an example of proper syntax.
+
 #### calc(expr, verbose=false)
 
 Takes an expresion as a string. Elements (including parentheses) should be separated by spaces. Calls `check_expr` to check whether the expresion is valid (see section below for details). If the expresion is valid, this function calculates the result, following order of operations, and returns the result as a float. If the expresion is invalid, returns `nil`. To create a custom GUI, simply send the expresion string to this function, and receive the result.
@@ -47,7 +54,9 @@ If verbose, the function will print intermediary expressions (see TUI usage abov
 
 Takes an expresion as an array of strings. e.g. "4 + 5" should be ["4", "+", "5"]. Valid expresions have at least 3 elements, start and end with a number, and alternate between numbers and operations (not counting parentheses). Implicit multiplication is not supported. Returns true if the expression is valid, false otherwise.
 
-need_check_parens determines whether or not to call check_parens(). If you need info on matching paren indices, it is recommended that you send false and call check_parens yourself
+Minor bug: expressions with operations immediately inside parentheses, such as `4 ( + 5 )`, will return true. See bugs section for more info
+
+need_check_parens determines whether or not to call check_parens(). If you need information on matching paren indices, it is recommended that you send false and call check_parens yourself.
 
 #### check_parens(expr_arr)
 Takes an array and determines whether it has properly nested parentheses. Works with these bracket types: (), {}, [], <>. The function finds the brackets, so the array can contain any elements, not just brackets. Returns nil if the nesting is invalid, returns an array with index info if the nesting is valid.
@@ -55,6 +64,14 @@ Takes an array and determines whether it has properly nested parentheses. Works 
 The array is of the form [[paren, i, j, match j], ...]  
 Where paren is the bracket as a string, i is its index in the returned array, j is its index in expr_arr, and match j is the index of the bracket's match in expr_arr. The array contains one such entry for every bracket in expr_arr.
 
-Although this function has been implemented, the program still does not yet support parentheses.
+This method could even be used outside of a calculator context if someone needed matching bracket information for another reason. For this purpose, check_parens() works with the <> bracket type, despite it not traditionally being used as brackets in math.
+
+## Known Bugs
+
+Verbose output does not work for expressions containing parentheses.
+
+When calling check_axpr(), expressions with operations immediately inside parentheses, such as `4 ( + 5 )`, will return true. This is because check_expr() works by verifying proper nesting via check_parens(), then it removes all brackets and checks for validity as though there are no brackets. This was the simplest and easiest way to get expression checking working with parentheses, but it will be changed in the future to prevent this bug.  
+This bug isn't an issue for the calculator because calc recurses, so `+ 5` will get checked on its own and return false. However, users calling check_expr() on there own should be aware of this bug.  
+If this bug causes issues for your use case, recursively send the contents of parentheses to check_expr(). This requires calling check_parens() yourself so you can get match index info.
 
 ## more readme content coming as program gets implemented
