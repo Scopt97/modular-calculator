@@ -144,7 +144,8 @@ def check_expr(expr_arr, need_check_parens=true)
   # this method means implied multiplication like 5(4+3) doesn't work
   # this is okay because calc() can't handle implicit mult anyway
   # before deleting, check for operation immediately inside parens
-  expr_arr.each_index do |i|
+  i = 0
+  while i < expr_arr.length do
     if PAIRS.key?(expr_arr[i])
       if OPS.flatten.include?(expr_arr[i+1])
         return false  # can't have op immediately inside paren
@@ -160,6 +161,9 @@ def check_expr(expr_arr, need_check_parens=true)
 
       expr_arr.delete_at(i)
       i -= 1  # deleted element, so adjust i
+
+    else
+      i += 1
     end
   end
 
