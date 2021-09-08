@@ -2,18 +2,21 @@
 #tui_calc.rb
 # Author: Kyle Nielsen
 # Date created: 7/10/21
-# Last update: 9/7/21
+# Last update: 9/8/21
 # Purpose: A TUI calculator that can be used as a backend for a GUI calculator
 # Credit: Nested bracket checking taken from UOregon Intermediate Data Structures
 #         assignment tought by Professor Andrzej Proskurowski
 # Future improvements: Don't require spaces between elements. e.g. (44+55)*66 should work
 #                      Allow implicit multiplication with parens
+#                        Solution: look for num immediately outside paren, insert *
 #                      Get verbose output to work with parens
 #                      Add more operations, such as %
 #                      Adjust some things for efficiency. Theres a lot of looping
 #                        through things, and some can probably be cut down.
 #                        This is not a priority as anyone needing a hyper-efficient
 #                        calculator will go for one written in C by an efficiency pro
+#                        Idea: when deleting elements, instead of setting index tracker
+#                              to 0, reduce it by the number of elements deleted
 
 
 # Valid operations, grouped based on order of operations
@@ -24,6 +27,7 @@
 OPS = [['^', '**'], ['*', '/'], ['+', '-']]
 
 # Hash matching open brackets to the appropriate closing bracket
+# Users can add bracket types simply by adding them to this hash
 PAIRS = {'(' => ')', '[' => ']', '{' => '}', '<' => '>'}
 
 
@@ -123,7 +127,7 @@ end
 # need_check_parens determines whether to call check_parens or not
 #   calc will send false because it calls check_parens itself since it needs
 #   the match index info
-def check_expr(expr_arr, need_check_parens=true) #TODO disallow "4 ( + 5 )". Not an issue for calc() because calc() recurses, but important for users calling this sepatately
+def check_expr(expr_arr, need_check_parens=true)
   expr_arr = expr_arr.clone  # need to change expr_arr later w/o changing source
 
   if expr_arr.length < 3  # valid expression is at least 2 numbers and an operation
@@ -139,9 +143,24 @@ def check_expr(expr_arr, need_check_parens=true) #TODO disallow "4 ( + 5 )". Not
   # brackets are valid, so remove them to test the expression
   # this method means implied multiplication like 5(4+3) doesn't work
   # this is okay because calc() can't handle implicit mult anyway
-  brackets = ['(', ')', '{', '}', '[', ']', '<', '>']  #TODO get brackets from pairs hash so users may add custom brackets
-  brackets.each do |brack| #TODO prob fix bug here. check for ops right of open or left of close. prob need to completely change this loop
-    expr_arr.delete(brack)
+  # before deleting, check for operation immediately inside parens
+  expr_arr.each_index do |i|
+    if PAIRS.key?(expr_arr[i])
+      if OPS.flatten.include?(expr_arr[i+1])
+        return false  # can't have op immediately inside paren
+      end
+
+      expr_arr.delete_at(i)
+      i -= 1  # deleted element, so adjust i
+
+    elsif PAIRS.value?(expr_arr[i])
+      if OPS.flatten.include?(expr_arr[i-1])
+        return false  # can't have op immediately inside paren
+      end
+
+      expr_arr.delete_at(i)
+      i -= 1  # deleted element, so adjust i
+    end
   end
 
   # first and last must be numbers (if not parentheses)
@@ -208,7 +227,7 @@ def calc(expr, verbose=false)
 
       # join contents and send to calc
       temp_expr = expr_arr[j+1...match_j].join(' ')
-      temp_result = calc(temp_expr)
+      temp_result = calc(temp_expr, verbose)
 
       # return if internal expression was invalid
       unless temp_result
@@ -283,7 +302,7 @@ if __FILE__ == $0
 
     if result == nil
       puts "Please enter a valid expression"
-      puts "Hint: all elements should be separated by spaces"
+      puts "Common error: all elements should be separated by spaces"
     elsif result % 1 == 0  # print int if result is integer
       puts result.to_i
     else

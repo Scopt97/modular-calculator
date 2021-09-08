@@ -15,7 +15,7 @@ Ruby. This was made with Ruby 3.0.1, but should work with earlier versions of Ru
 Either execute using ruby: `ruby tui_calc.rb` or make the file executable and execute directly: `./tui_calc.rb`
 
 The program accepts one optional command line argument -v. If given, the program will print verbose output. This means printing intermediary expressions during calculation. Only works without parentheses.  
-e.g. `4 + 5 * 6` will print `4 + 30.0` before printing the final result.
+e.g. `4 + 5 * 6` will print `4 + 30.0` before printing `34`.
 
 The program will prompt for a methematical expresion. Valid operations are displayed. Separate different elements using spaces. e.g. `4 + 5` is right, but `4+5` is wrong.
 
@@ -42,19 +42,19 @@ First, add an entry in OPS global array. This is an array of arrays. Order of op
 Second, create a function for your operation. In theory, this function could be anything as long as it takes two floats as input and returns one as output.  
 Finally, add an entry to ops_hash in calc(). This hash maps the string for an operation to its function. The existing entries can be used as an example of proper syntax.
 
+New brackets can also be added. Simply add an entry to the global PAIRS hash.
+
 #### calc(expr, verbose=false)
 
 Takes an expresion as a string. Elements (including parentheses) should be separated by spaces. Calls `check_expr` to check whether the expresion is valid (see section below for details). If the expresion is valid, this function calculates the result, following order of operations, and returns the result as a float. If the expresion is invalid, returns `nil`. To create a custom GUI, simply send the expresion string to this function, and receive the result.
 
 Implicit multiplication is not supported. e.g. 4 ( 5 - 6 ) is invalid. 4 * ( 5 - 6 ) should be used instead.
 
-If verbose, the function will print intermediary expressions (see TUI usage above). This is primarily intended for TUI use. Default is false.
+If verbose, the function will print intermediary expressions (see TUI usage above). This is primarily intended for TUI use. Default is false. Doesn't work properly for expressions with parentheses.
 
 #### check_expr(expr_arr, need_check_parens=true)
 
 Takes an expresion as an array of strings. e.g. "4 + 5" should be ["4", "+", "5"]. Valid expresions have at least 3 elements, start and end with a number, and alternate between numbers and operations (not counting parentheses). Implicit multiplication is not supported. Returns true if the expression is valid, false otherwise.
-
-Minor bug: expressions with operations immediately inside parentheses, such as `4 ( + 5 )`, will return true. See bugs section for more info
 
 need_check_parens determines whether or not to call check_parens(). If you need information on matching paren indices, it is recommended that you send false and call check_parens yourself.
 
@@ -68,10 +68,6 @@ This method could even be used outside of a calculator context if someone needed
 
 ## Known Bugs
 
-Verbose output does not work for expressions containing parentheses.
-
-When calling check_axpr(), expressions with operations immediately inside parentheses, such as `4 ( + 5 )`, will return true. This is because check_expr() works by verifying proper nesting via check_parens(), then it removes all brackets and checks for validity as though there are no brackets. This was the simplest and easiest way to get expression checking working with parentheses, but it will be changed in the future to prevent this bug.  
-This bug isn't an issue for the calculator because calc recurses, so `+ 5` will get checked on its own and return false. However, users calling check_expr() on there own should be aware of this bug.  
-If this bug causes issues for your use case, recursively send the contents of parentheses to check_expr(). This requires calling check_parens() yourself so you can get match index info.
+Verbose output does not work for expressions containing parentheses. This is likely due to the recursion done in calc() when an expression contains parentheses.
 
 ## more readme content coming as program gets implemented
