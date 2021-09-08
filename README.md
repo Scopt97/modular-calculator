@@ -54,7 +54,7 @@ If verbose, the function will print intermediary expressions (see TUI usage abov
 
 #### check_expr(expr_arr, need_check_parens=true)
 
-Takes an expresion as an array of strings. e.g. "4 + 5" should be ["4", "+", "5"]. Valid expresions have at least 3 elements, start and end with a number, and alternate between numbers and operations (not counting parentheses). Implicit multiplication is not supported. Returns true if the expression is valid, false otherwise.
+Takes an expresion as an array of strings. e.g. "4 + 5" should be ["4", "+", "5"]. Valid expresions have at least 3 elements, start and end with a number, and alternate between numbers and operations (not counting parentheses). Valid expressions do not contain operations immediately inside parentheses (e.g. 4 ( + 5) and ( 4 + ) 5 are wrong). Implicit multiplication is not supported. Returns true if the expression is valid, false otherwise.
 
 need_check_parens determines whether or not to call check_parens(). If you need information on matching paren indices, it is recommended that you send false and call check_parens yourself.
 
