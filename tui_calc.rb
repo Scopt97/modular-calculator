@@ -5,7 +5,8 @@
 # Last update: 9/8/21
 # Purpose: A TUI calculator that can be used as a backend for a GUI calculator
 # Credit: Nested bracket checking taken from UOregon Intermediate Data Structures
-#         assignment taught by Professor Andrzej Proskurowski
+#         assignment taught by Professor Andrzej Proskurowski.
+#         Some credit in comments.
 # Future improvements: Don't require spaces between elements. e.g. (44+55)*66 should work
 #                      Allow implicit multiplication with parens
 #                        Solution: look for num immediately outside paren, insert *

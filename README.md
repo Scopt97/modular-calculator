@@ -31,6 +31,13 @@ Run with `ruby gui_calc_basic.rb` or make executable and do `./gui_calc_basic.rb
 This GUI is text entry only, with no buttons. Like the TUI, this still requires spaces between all elements.  
 The GUI consists of an expression entry field, an equals button, and a label that displays the result. Simply type the expression (with spaces) into the entry field, then click '='.
 
+#### Full GUI
+
+Run the same way as basic GUI, but the file is called `gui_calc.rb`
+
+This is a full calculator GUI, with buttons and the ability to edit the expression manually. Like the other interfaces, manual entry still requires spaces. The buttons put spaces in when pressed, and remove when needed (i.e. decimals can't be surrounded by spaces), so button entry requires no special thought.  
+The interface should be intuitive and work as expected. The 'del' key deletes the last character, and 'C' deletes the entire expression.
+
 ### As a module/library
 
 #### valid operations

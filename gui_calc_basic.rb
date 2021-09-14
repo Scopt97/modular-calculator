@@ -6,7 +6,8 @@
 # Purpose: A GUI to complement tui_calc. Basic text entry version.
 # Credit: https://github.com/kojix2/LibUI for the ruby version of libui, as well
 #           as examples used to help put my GUI together.
-# Future improvements:
+# Future improvements: Make a normal executable. Users using a GUI may not be
+#                        familiar with the terminal
 
 require 'libui'
 require_relative 'tui_calc'
@@ -50,9 +51,12 @@ button_eq = UI.new_button('=')
 UI.button_on_clicked(button_eq) do
   expr = UI.entry_text(expr_entry).to_s
   result = calc(expr).to_s
+
+  # case where result was nil (invalid expression)
   if result == ""
     result = "Invalid expression.\nDid you use spaces?"
   end
+
   UI.label_set_text(result_label, result)
 end
 UI.box_append(hbox, button_eq, 0)
