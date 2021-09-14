@@ -66,7 +66,7 @@ calc_entry = UI.new_entry
 UI.entry_set_text calc_entry, ""
 UI.box_append(row5, calc_entry, 1)
 
-# Buttons
+# Buttons #TODO Allow multi-digit numbers. if prev char is num, don't add space
 
 # Row 0
 button_dot = UI.new_button('.')
@@ -80,6 +80,12 @@ UI.box_append(row0, button_dot, 1)
 button0 = UI.new_button('0')
 UI.button_on_clicked(button0) do
   curr_expr = UI.entry_text(calc_entry).to_s
+
+  # if last char is num, remove trailing space
+  # allows for multi-digit numbers
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "0 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -115,6 +121,9 @@ UI.box_append(row0, button_add, 1)
 button1 = UI.new_button('1')
 UI.button_on_clicked(button1) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "1 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -123,6 +132,9 @@ UI.box_append(row1, button1, 1)
 button2 = UI.new_button('2')
 UI.button_on_clicked(button2) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "2 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -131,6 +143,9 @@ UI.box_append(row1, button2, 1)
 button3 = UI.new_button('3')
 UI.button_on_clicked(button3) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "3 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -148,6 +163,9 @@ UI.box_append(row1, button_sub, 1)
 button4 = UI.new_button('4')
 UI.button_on_clicked(button4) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "4 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -156,6 +174,9 @@ UI.box_append(row2, button4, 1)
 button5 = UI.new_button('5')
 UI.button_on_clicked(button5) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "5 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -164,6 +185,9 @@ UI.box_append(row2, button5, 1)
 button6 = UI.new_button('6')
 UI.button_on_clicked(button6) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "6 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -181,6 +205,9 @@ UI.box_append(row2, button_mul, 1)
 button7 = UI.new_button('7')
 UI.button_on_clicked(button7) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "7 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -189,6 +216,9 @@ UI.box_append(row3, button7, 1)
 button8 = UI.new_button('8')
 UI.button_on_clicked(button8) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "8 "
   UI.entry_set_text(calc_entry, new_expr)
 end
@@ -197,6 +227,9 @@ UI.box_append(row3, button8, 1)
 button9 = UI.new_button('9')
 UI.button_on_clicked(button9) do
   curr_expr = UI.entry_text(calc_entry).to_s
+  if curr_expr.strip != "" and curr_expr.rstrip[-1].numeric?
+    curr_expr = curr_expr.rstrip
+  end
   new_expr = curr_expr + "9 "
   UI.entry_set_text(calc_entry, new_expr)
 end
