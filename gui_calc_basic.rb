@@ -15,7 +15,6 @@ UI = LibUI
 UI.init
 
 should_quit = proc do
-  puts 'Bye Bye'
   UI.control_destroy(MAIN_WINDOW)
   UI.quit
   0
@@ -38,12 +37,12 @@ UI.box_set_padded(hbox, 1)
 UI.box_append(vbox, hbox, 1)
 
 # Result
-result_label = UI.new_label('Answer goes here')
+result_label = UI.new_label('Separate all elements with spaces')
 UI.box_append(vbox, result_label, 1)
 
 # Expression Entry
 expr_entry = UI.new_entry
-UI.entry_set_text expr_entry, 'use spaces'
+UI.entry_set_text expr_entry, ''
 UI.box_append(hbox, expr_entry, 1)
 
 # Submit/= Button

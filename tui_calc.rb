@@ -30,6 +30,15 @@ OPS = [['^', '**'], ['*', '/'], ['+', '-']]
 # Users can add bracket types simply by adding them to this hash
 PAIRS = {'(' => ')', '[' => ']', '{' => '}', '<' => '>'}
 
+# credit: https://www.codegrepper.com/code-examples/ruby/ruby+check+if+string+is+number
+# determine whether a string is a number
+# side rant: Why does a language designed to make programming fun and easy
+#            not have this functionality built in? That's not very fun and easy
+class String
+  def numeric?
+    Float(self) != nil rescue false
+  end
+end
 
 # Functions for the different operations
 # These are converted to symbols, then used as the values in ops_hash in clac()
@@ -168,11 +177,11 @@ def check_expr(expr_arr, need_check_parens=true)
   end
 
   # first and last must be numbers (if not parentheses)
-  if expr_arr[0].respond_to?(:to_f) and expr_arr[-1].respond_to?(:to_f)
+  if expr_arr[0].numeric? and expr_arr[-1].numeric?
     valid = true
     expr_arr.each_index do |i|
       if i % 2 == 0  # if i even
-        unless expr_arr[i].respond_to?(:to_f)  # even elements must be numbers
+        unless expr_arr[i].numeric?  # even elements must be numbers
           valid = false
         end
       else  # if i odd
@@ -244,6 +253,11 @@ def calc(expr, verbose=false)
     else
       j += 1
     end
+  end
+
+  # If, after dealing with parens, there is only one element, return it
+  if expr_arr.length == 1
+    return expr_arr[0].to_f
   end
 
   result = 0  # initialize result variable so the return statement can find it

@@ -6,7 +6,8 @@ A calculator app with seperate GUI and back end. Backend has a TUI if executed d
 
 ## Requirements
 
-Ruby. This was made with Ruby 3.0.1, but should work with earlier versions of Ruby.
+Ruby. This was made with Ruby 3.0.1, but should work with earlier versions of Ruby.  
+The GUI requires the 'libui' rubygem
 
 ## Usage
 
@@ -23,7 +24,12 @@ The program will continue prompting for new expressions until the user enters `(
 
 ### GUI
 
-Not yet implemented
+#### Basic GUI
+
+Run with `ruby gui_calc_basic.rb` or make executable and do `./gui_calc_basic.rb`
+
+This GUI is text entry only, with no buttons. Like the TUI, this still requires spaces between all elements.  
+The GUI consists of an expression entry field, an equals button, and a label that displays the result. Simply type the expression (with spaces) into the entry field, then click '='.
 
 ### As a module/library
 
