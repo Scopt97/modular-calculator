@@ -35,8 +35,8 @@ The GUI consists of an expression entry field, an equals button, and a label tha
 
 Run the same way as basic GUI, but the file is called `gui_calc.rb`
 
-This is a full calculator GUI, with buttons and the ability to edit the expression manually. Like the other interfaces, manual entry still requires spaces. The buttons put spaces in when pressed, and remove when needed (i.e. decimals can't be surrounded by spaces), so button entry requires no special thought.  
-The interface should be intuitive and work as expected. The 'del' key deletes the last character, and 'C' deletes the entire expression.
+This is a full calculator GUI, with buttons and the ability to edit the expression manually. Like the other interfaces, manual entry still requires spaces. The buttons put a space after the character when pressed, and remove when needed (i.e. decimals can't be surrounded by spaces), so button entry requires no special thought.  
+The interface should be intuitive and work as expected. The 'del' key deletes the last character (unaffected by spaces), and 'C' deletes the entire expression. When the result is displayed, it already includes a space at the end, so users can easily do further calculations with the result.
 
 ### As a module/library
 
