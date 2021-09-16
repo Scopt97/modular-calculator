@@ -61,15 +61,16 @@ New brackets can also be added. Simply add an entry to the global PAIRS hash.
 
 Takes an expresion as a string. Elements (including parentheses) should be separated by spaces. Calls `check_expr` to check whether the expresion is valid (see section below for details). If the expresion is valid, this function calculates the result, following order of operations, and returns the result as a float. If the expresion is invalid, returns `nil`. To create a custom GUI, simply send the expresion string to this function, and receive the result.
 
-Implicit multiplication is not supported. e.g. 4 ( 5 - 6 ) is invalid. 4 * ( 5 - 6 ) should be used instead.
+Implicit multiplication is not supported. e.g. `4 ( 5 - 6 )` is invalid. `4 * ( 5 - 6 )` should be used instead.
 
 If verbose, the function will print intermediary expressions (see TUI usage above). This is primarily intended for TUI use. Default is false. Doesn't work properly for expressions with parentheses.
 
 #### check_expr(expr_arr, need_check_parens=true)
 
-Takes an expresion as an array of strings. e.g. "4 + 5" should be ["4", "+", "5"]. Valid expresions have at least 3 elements, start and end with a number, and alternate between numbers and operations (not counting parentheses). Valid expressions do not contain operations immediately inside parentheses (e.g. 4 ( + 5) and ( 4 + ) 5 are wrong). Implicit multiplication is not supported. Returns true if the expression is valid, false otherwise.
+Takes an expresion as an array of strings. e.g. `"4 + 5"` should be `["4", "+", "5"]`. Valid expresions have at least 3 elements, start and end with a number, and alternate between numbers and operations (not counting parentheses). Valid expressions do not contain operations immediately inside parentheses (e.g. `4 ( + 5 )` and `( 4 + ) 5` are wrong). Implicit multiplication is not supported. Returns true if the expression is valid, false otherwise.
 
-need_check_parens determines whether or not to call check_parens(). If you need information on matching paren indices, it is recommended that you send false and call check_parens yourself.
+need_check_parens determines whether or not to call check_parens(). If you need information on matching paren indices, it is recommended that you send false and call check_parens yourself.  
+Note: if need_check_parens is false, then check_expr() will return true for an expression that has invalid bracket nesting, but is otherwise valid. This is a consequence of not checking for bracket validity.
 
 #### check_parens(expr_arr)
 Takes an array and determines whether it has properly nested parentheses. Works with these bracket types: (), {}, [], <>. The function finds the brackets, so the array can contain any elements, not just brackets. Returns nil if the nesting is invalid, returns an array with index info if the nesting is valid.
