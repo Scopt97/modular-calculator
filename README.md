@@ -7,7 +7,8 @@ A calculator app with seperate GUI and back end. Backend has a TUI if executed d
 ## Requirements
 
 Ruby. This was made with Ruby 3.0.1, but should work with earlier versions of Ruby.  
-The GUI requires the 'libui' rubygem
+The GUI requires the 'libui' rubygem  
+The programm has beed tested on Linux (Fedora 34) and Windows 10. Unfortunately, I can't test it on OS X, but it should work fine.
 
 ## Usage
 

@@ -2,7 +2,7 @@
 #gui_calc.rb
 # Author: Kyle Nielsen
 # Date created: 9/8/21
-# Last update: 9/10/21
+# Last update: 9/14/21
 # Purpose: A GUI to complement tui_calc. Not menat to be pretty, just meant to work.
 # Credit: https://github.com/kojix2/LibUI for the ruby version of libui, as well
 #           as examples used to help put my GUI together.

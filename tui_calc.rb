@@ -2,7 +2,7 @@
 #tui_calc.rb
 # Author: Kyle Nielsen
 # Date created: 7/10/21
-# Last update: 9/8/21
+# Last update: 9/16/21
 # Purpose: A TUI calculator that can be used as a backend for a GUI calculator
 # Credit: Nested bracket checking taken from UOregon Intermediate Data Structures
 #         assignment taught by Professor Andrzej Proskurowski.
