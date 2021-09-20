@@ -29,7 +29,7 @@ The program will continue prompting for new expressions until the user enters `(
 
 Run with `ruby gui_calc_basic.rb` or make executable and do `./gui_calc_basic.rb`
 
-This GUI is text entry only, with no buttons. Like the TUI, this still requires spaces between all elements.  
+This GUI is text entry only, with no buttons except '='. Like the TUI, this still requires spaces between all elements.  
 The GUI consists of an expression entry field, an equals button, and a label that displays the result. Simply type the expression (with spaces) into the entry field, then click '='.
 
 #### Full GUI
@@ -83,6 +83,4 @@ This method could even be used outside of a calculator context if someone needed
 
 ## Known Bugs
 
-Verbose output does not work for expressions containing parentheses. This is likely due to the recursion done in calc() when an expression contains parentheses.
-
-## more readme content coming as program gets implemented
+Verbose output does not work for expressions containing parentheses. This is likely due to the recursion done in calc() when an expression contains parentheses. This bug is a very low priority because verbose output was created for debugging purposes, so leaving this bug doesn't hurt the intended functionality of the program.
