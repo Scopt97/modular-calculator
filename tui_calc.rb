@@ -296,10 +296,9 @@ def calc(expr, verbose=false)
   return result
 end
 
-
 # TUI for when calculator is run from command line
 # accepts an optional command line argument -v for verbose output
-if __FILE__ == $0
+def main
   # determine whether to use verbose outpuut
   verbose = false
   if ARGV[0] != nil and ARGV[0].downcase == "-v"
@@ -331,4 +330,8 @@ if __FILE__ == $0
    print "enter another expression, or (q)uit: "
    expr = STDIN.gets.strip
   end
+end
+
+if __FILE__ == $0
+  main
 end
